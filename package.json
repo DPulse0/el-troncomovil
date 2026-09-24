@@ -1,0 +1,12 @@
+{
+  "name": "el-troncomovil",
+  "version": "1.0.0",
+  "description": "Tarjeta VIP",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

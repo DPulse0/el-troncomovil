@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja / Admin - El Troncomovil</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .admin-container {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        .logo-container {
+            margin-bottom: 8px;
+        }
+        .restaurant-logo {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #f59e0b;
+        }
+        h2 {
+            color: #f59e0b;
+            margin-bottom: 5px;
+        }
+        p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            background: #f59e0b;
+            color: #0f172a;
+            border: none;
+            padding: 14px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 15px;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #fbbf24;
+        }
+        #mensaje {
+            margin-top: 15px;
+            font-size: 13px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="logo-container">
+            <img src="logo.png" alt="Logo" class="restaurant-logo" onerror="this.style.display='none'">
+        </div>
+        <h2>Caja - El Troncomovil</h2>
+        <p>Panel de validación y suma de sellos VIP</p>
+
+        <div class="form-group">
+            <label for="pin">PIN de Seguridad (Caja):</label>
+            <input type="password" id="pin" placeholder="****" maxlength="4">
+        </div>
+
+        <div class="form-group">
+            <label for="clienteId">Celular del Cliente:</label>
+            <input type="tel" id="clienteId" placeholder="Ej. 3101234567">
+        </div>
+
+        <button onclick="sumarSello()">Sumar Sello 🍔</button>
+
+        <div id="mensaje"></div>
+    </div>
+
+    <script>
+        async function sumarSello() {
+            const pin = document.getElementById('pin').value.trim();
+            const clienteId = document.getElementById('clienteId').value.trim();
+            const mensajeDiv = document.getElementById('mensaje');
+
+            mensajeDiv.innerText = "";
+            mensajeDiv.className = "";
+
+            if (!pin || !clienteId) {
+                mensajeDiv.innerText = "Por favor ingresa el PIN y el celular del cliente.";
+                mensajeDiv.className = "error";
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/sumar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin, clienteId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mensajeDiv.innerText = `✅ ¡Sello sumado con éxito! Cliente: ${data.cliente.nombre} (${data.cliente.puntos}/${data.cliente.meta})`;
+                    mensajeDiv.className = "success";
+                    document.getElementById('clienteId').value = '';
+                } else {
+                    mensajeDiv.innerText = `❌ ${data.error || 'Error al procesar'}`;
+                    mensajeDiv.className = "error";
+                }
+            } catch (error) {
+                mensajeDiv.innerText = "❌ Error de conexión con el servidor.";
+                mensajeDiv.className = "error";
+            }
+        }
+    </script>
+</body>
+</html>

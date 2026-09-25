@@ -22,8 +22,8 @@ const clienteSchema = new mongoose.Schema({
 
 const Cliente = mongoose.model('Cliente', clienteSchema);
 
-// Variable global para promociones
-let ultimaPromocion = "";
+// --- VARIABLE GLOBAL PARA PROMOCIONES CON TIMESTAMP ---
+let ultimaPromocion = { mensaje: "", timestamp: 0 };
 
 // 1. Obtener todos los clientes para el panel de administración
 app.get('/api/clientes', async (req, res) => {
@@ -156,17 +156,21 @@ app.delete('/api/cliente/:id', async (req, res) => {
     }
 });
 
-// 8. Endpoints de promociones globales
+// 8. Endpoints de promociones globales con sincronización por Timestamp
 app.post('/api/admin/promocion', (req, res) => {
     const { mensaje } = req.body;
     if (!mensaje) return res.status(400).json({ error: "Mensaje vacío" });
     
-    ultimaPromocion = mensaje;
+    ultimaPromocion = {
+        mensaje: mensaje,
+        timestamp: Date.now()
+    };
+    
     res.json({ success: true, mensaje: "Promoción guardada con éxito" });
 });
 
 app.get('/api/promocion-activa', (req, res) => {
-    res.json({ promocion: ultimaPromocion });
+    res.json(ultimaPromocion);
 });
 
 const PORT = process.env.PORT || 3000;

@@ -3,161 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - El Troncomovil</title>
-    <link rel="icon" type="image/png" href="logo.png">
+    <title>Admin - El Troncomovil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0b0f19;
             color: #ffffff;
-            margin: 0;
             padding: 20px;
         }
-        .admin-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #334155;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #1f293d;
             padding-bottom: 15px;
-            margin-bottom: 25px;
         }
-        h1 {
+
+        header h1 {
+            font-size: 1.5rem;
             color: #f59e0b;
-            font-size: 24px;
-            margin: 0;
         }
-        .card-section {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
+
+        header a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        header a:hover {
+            color: #f59e0b;
+        }
+
+        .card {
+            background-color: #111827;
+            border: 1px solid #1f293d;
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 16px;
-            border: 1px solid #334155;
             margin-bottom: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
-        .card-section h3 {
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
             color: #f59e0b;
-            margin-top: 0;
         }
-        input, textarea {
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        textarea {
             width: 100%;
             padding: 12px;
-            margin: 8px 0 15px 0;
+            background-color: #1f293d;
+            border: 1px solid #374151;
             border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-        textarea {
+            color: #ffffff;
             resize: vertical;
-            height: 80px;
+            min-height: 90px;
+            font-size: 0.95rem;
         }
-        button {
-            background: #f59e0b;
-            color: #0f172a;
+
+        textarea:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        .btn {
+            background-color: #f59e0b;
+            color: #0b0f19;
             border: none;
-            padding: 12px 20px;
-            font-weight: bold;
+            padding: 10px 20px;
+            font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            transition: opacity 0.2s;
+            transition: background-color 0.2s;
         }
-        button:hover {
-            opacity: 0.9;
+
+        .btn:hover {
+            background-color: #d97706;
         }
-        .client-table {
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .client-table th, .client-table td {
-            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #334155;
-            font-size: 14px;
+            font-size: 0.9rem;
         }
-        .client-table th {
-            color: #94a3b8;
-            font-size: 12px;
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #1f293d;
+        }
+
+        th {
+            color: #9ca3af;
+            font-weight: 500;
             text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
         }
+
+        td {
+            color: #e5e7eb;
+        }
+
         .btn-accion {
-            padding: 6px 10px;
-            font-size: 12px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
             margin-right: 5px;
+            background-color: #f59e0b;
+            color: #0b0f19;
+            transition: opacity 0.2s;
         }
+
+        .btn-accion:hover {
+            opacity: 0.85;
+        }
+
         .btn-danger {
-            background: #ef4444;
-            color: #fff;
+            background-color: #ef4444;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
 
-    <div class="admin-container">
-        <header>
-            <h1>🍔 Admin - El Troncomovil</h1>
-            <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 14px;">Ver Tarjeta VIP &rarr;</a>
-        </header>
+    <header>
+        <h1>🍔 Admin - El Troncomovil</h1>
+        <a href="index.html">Ver Tarjeta VIP &rarr;</a>
+    </header>
 
-        <!-- Sección para Enviar Promociones / Notificaciones -->
-        <div class="card-section">
-            <h3>📢 Enviar Promoción del Día</h3>
-            <p style="font-size: 13px; color: #94a3b8;">Escribe el mensaje de la promoción que deseas difundir a los clientes:</p>
-            <textarea id="input-promo" placeholder="Ej. ¡Hoy 2x1 en hamburguesas artesanales de 6pm a 9pm! Ven por la tuya."></textarea>
-            <button onclick="enviarPromocionGlobal()">Enviar Notificación a Clientes</button>
+    <!-- Sección de Promociones / Notificaciones -->
+    <div class="card">
+        <h2>📢 Enviar Promoción del Día</h2>
+        <div class="form-group">
+            <textarea id="input-promo" placeholder="Ej: ¡Hoy 2x1 en hamburguesas artesanales de 6pm a 9pm! Ven por la tuya."></textarea>
         </div>
+        <button class="btn" onclick="enviarPromocionGlobal()">Enviar Notificación a Clientes</button>
+    </div>
 
-        <!-- Sección de Gestión de Clientes -->
-        <div class="card-section">
-            <h3>👥 Clientes Registrados</h3>
-            <div style="overflow-x: auto;">
-                <table class="client-table">
-                    <thead>
-                        <tr>
-                            <th>Celular</th>
-                            <th>Nombre</th>
-                            <th>Cumpleaños</th>
-                            <th>Sellos</th>
-                            <th>Acciones</th>
-                        </tr>
-                    <thead id="tabla-clientes">
-                        <!-- Se llena dinámicamente -->
-                    </thead>
-                </table>
-            </div>
+    <!-- Sección de Clientes Registrados -->
+    <div class="card">
+        <h2>👥 Clientes Registrados</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Celular</th>
+                        <th>Nombre</th>
+                        <th>Cumpleaños</th>
+                        <th>Sellos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-clientes">
+                    <!-- Los datos se cargan dinámicamente aquí -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        // Cargar lista de clientes al abrir el panel
         document.addEventListener("DOMContentLoaded", cargarClientesAdmin);
 
         async function cargarClientesAdmin() {
             try {
-                // Endpoint para obtener todos los clientes (asegúrate de tenerlo en tu server.js o ajústalo)
                 const res = await fetch('/api/clientes');
                 const clientes = await res.json();
                 
                 const tbody = document.getElementById('tabla-clientes');
                 tbody.innerHTML = '';
 
+                if (clientes.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #9ca3af;">No hay clientes registrados aún.</td></tr>`;
+                    return;
+                }
+
                 clientes.forEach(c => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${c.celular}</td>
+                        <td>${c.telefono}</td>
                         <td>${c.nombre || 'Socio VIP'}</td>
                         <td>${c.cumpleanos || 'No registrada'}</td>
                         <td><strong>${c.puntos}</strong> / ${c.meta}</td>
                         <td>
-                            <button class="btn-accion" onclick="sumarSello('${c.celular}')">+ Sello</button>
-                            <button class="btn-accion btn-danger" onclick="eliminarCliente('${c.celular}')">Borrar</button>
+                            <button class="btn-accion" onclick="sumarSello('${c.telefono}')">+ Sello</button>
+                            <button class="btn-accion btn-danger" onclick="eliminarCliente('${c.telefono}')">Borrar</button>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -167,35 +218,58 @@
             }
         }
 
-        async function sumarSello(celular) {
+        async function sumarSello(telefono) {
             try {
-                await fetch(`/api/cliente/${celular}/sello`, { method: 'POST' });
-                cargarClientesAdmin();
+                const res = await fetch(`/api/cliente/${telefono}/sello`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    cargarClientesAdmin();
+                } else {
+                    alert(data.error || "No se pudo sumar el sello");
+                }
             } catch (e) {
                 console.error("Error al sumar sello", e);
             }
         }
 
-        async function eliminarCliente(celular) {
-            if(!confirm(`¿Seguro que deseas eliminar al cliente ${celular}?`)) return;
+        async function eliminarCliente(telefono) {
+            if(!confirm(`¿Seguro que deseas eliminar al cliente con número ${telefono}?`)) return;
             try {
-                await fetch(`/api/cliente/${celular}`, { method: 'DELETE' });
-                cargarClientesAdmin();
+                const res = await fetch(`/api/cliente/${telefono}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    cargarClientesAdmin();
+                } else {
+                    alert(data.error || "No se pudo eliminar el cliente");
+                }
             } catch (e) {
                 console.error("Error al eliminar cliente", e);
             }
         }
 
-        function enviarPromocionGlobal() {
+        async function enviarPromocionGlobal() {
             const mensaje = document.getElementById('input-promo').value.trim();
             if (!mensaje) {
                 alert("Por favor escribe un mensaje de promoción.");
                 return;
             }
 
-            // Aquí guardamos la promo o disparamos la alerta visual a los navegadores abiertos
-            alert("¡Promoción enviada con éxito! Los clientes conectados la recibirán.");
-            document.getElementById('input-promo').value = "";
+            try {
+                const response = await fetch('/api/admin/promocion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje })
+                });
+
+                if (response.ok) {
+                    alert("¡Promoción enviada con éxito!");
+                    document.getElementById('input-promo').value = "";
+                } else {
+                    alert("Error al enviar la promoción");
+                }
+            } catch (e) {
+                console.error("Error al enviar promoción", e);
+            }
         }
     </script>
 </body>

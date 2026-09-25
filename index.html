@@ -267,33 +267,37 @@
 </head>
 <body>
 
+    <!-- Paso 1: Número de celular -->
     <div id="modal-registro" class="modal-overlay">
         <div class="modal-content">
             <h3>¡Bienvenido a VIP! 🍔</h3>
             <p style="font-size: 13px; color: #94a3b8;">Ingresa tu número de celular para activar tu tarjeta:</p>
             <input type="tel" id="input-celular" placeholder="Ej. 3101234567" autocomplete="tel">
-            <button onclick="siguientePasoNombre()">Continuar</button>
+            <button onclick="siguientePasoCumpleanos()">Siguiente</button>
         </div>
     </div>
 
+    <!-- Paso 2: Fecha de cumpleaños -->
+    <div id="modal-cumpleanos" class="modal-overlay">
+        <div class="modal-content">
+            <h3>¡Tu Cumpleaños! 🎂</h3>
+            <p style="font-size: 13px; color: #94a3b8;">Ingresa tu día y mes (Ej: 21/01) para sorpresas:</p>
+            <input type="text" id="input-cumpleanos" placeholder="DD/MM">
+            <button onclick="siguientePasoNombre()">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Paso 3: Nombre -->
     <div id="modal-nombre" class="modal-overlay">
         <div class="modal-content">
             <h3>¿Cómo te llamas? ✍️</h3>
             <p style="font-size: 13px; color: #94a3b8;">Personaliza el nombre de tu tarjeta VIP:</p>
             <input type="text" id="input-nombre" placeholder="Tu nombre" autocomplete="name">
-            <button onclick="siguientePasoCumpleanos()">Siguiente</button>
-        </div>
-    </div>
-
-    <div id="modal-cumpleanos" class="modal-overlay">
-        <div class="modal-content">
-            <h3>¡Tu Cumpleaños! 🎂</h3>
-            <p style="font-size: 13px; color: #94a3b8;">Ingresa tu día y mes (Ej: 21/01) para recibir sorpresas:</p>
-            <input type="text" id="input-cumpleanos" placeholder="DD/MM">
             <button onclick="guardarRegistroCompleto()">Guardar y Ver Tarjeta</button>
         </div>
     </div>
 
+    <!-- Modal para editar nombre despues -->
     <div id="modal-editar" class="modal-overlay">
         <div class="modal-content">
             <h3>Editar Nombre ✏️</h3>
@@ -336,6 +340,7 @@
 
     <script>
         let clienteCelular = localStorage.getItem('troncomovil_celular');
+        let tempCumple = "";
         let tempNombre = "";
 
         if (!clienteCelular) {
@@ -344,7 +349,7 @@
             iniciarTarjeta(clienteCelular);
         }
 
-        function siguientePasoNombre() {
+        function siguientePasoCumpleanos() {
             const celularInput = document.getElementById('input-celular').value.trim();
             if (celularInput.length < 7) {
                 alert('Por favor ingresa un número de celular válido.');
@@ -352,20 +357,20 @@
             }
             clienteCelular = celularInput;
             document.getElementById('modal-registro').style.display = 'none';
-            document.getElementById('modal-nombre').style.display = 'flex';
-        }
-
-        function siguientePasoCumpleanos() {
-            tempNombre = document.getElementById('input-nombre').value.trim() || "Socio VIP";
-            document.getElementById('modal-nombre').style.display = 'none';
             document.getElementById('modal-cumpleanos').style.display = 'flex';
         }
 
+        function siguientePasoNombre() {
+            tempCumple = document.getElementById('input-cumpleanos').value.trim();
+            document.getElementById('modal-cumpleanos').style.display = 'none';
+            document.getElementById('modal-nombre').style.display = 'flex';
+        }
+
         async function guardarRegistroCompleto() {
-            const cumpleInput = document.getElementById('input-cumpleanos').value.trim();
+            tempNombre = document.getElementById('input-nombre').value.trim() || "Socio VIP";
             
             localStorage.setItem('troncomovil_celular', clienteCelular);
-            document.getElementById('modal-cumpleanos').style.display = 'none';
+            document.getElementById('modal-nombre').style.display = 'none';
 
             try {
                 // Registrar datos básicos (nombre y celular)
@@ -375,12 +380,12 @@
                     body: JSON.stringify({ nombre: tempNombre })
                 });
 
-                // Registrar la fecha de cumpleaños en su respectiva ruta
-                if(cumpleInput) {
+                // Registrar la fecha de cumpleaños
+                if(tempCumple) {
                     await fetch(`/api/cliente/${clienteCelular}/cumpleanos`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cumpleanos: cumpleInput })
+                        body: JSON.stringify({ cumpleanos: tempCumple })
                     });
                 }
             } catch (e) {

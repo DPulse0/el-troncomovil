@@ -220,7 +220,6 @@
 
     <!-- Script de la aplicación cliente -->
     <script>
-        // Obtener o asignar número de celular único por localStorage para pruebas
         let telefonoCliente = localStorage.getItem('troncomovil_telefono');
 
         if (!telefonoCliente) {
@@ -232,9 +231,11 @@
             cargarDatosCliente();
             generarQRCliente();
             
-            // Verificar promociones al cargar y cada 4 segundos
-            verificarPromociones();
-            setInterval(verificarPromociones, 4000);
+            // Sincronización en tiempo real cada 3 segundos para sellos y promociones
+            setInterval(() => {
+                verificarPromociones();
+                cargarDatosClienteSilencioso();
+            }, 3000);
         });
 
         async function cargarDatosCliente() {
@@ -252,21 +253,35 @@
             }
         }
 
+        async function cargarDatosClienteSilencioso() {
+            try {
+                const res = await fetch(`/api/cliente/${telefonoCliente}`);
+                const cliente = await res.json();
+                if (cliente) {
+                    renderizarSellos(cliente.puntos, cliente.meta || 10);
+                }
+            } catch (e) {
+                // Silencioso ante errores de red menores
+            }
+        }
+
         function renderizarSellos(puntosActuales, meta) {
             const grid = document.getElementById('grid-sellos');
             grid.innerHTML = '';
 
             for (let i = 0; i < meta; i++) {
                 const slot = document.createElement('div');
-                slot.className = `stamp-slot ${i < puntosActuales ? 'filled' : ''}`;
-                slot.innerHTML = i < puntosActuales ? '🍔' : '';
+                const estaLleno = i < puntosActuales;
+                
+                // Espacios vacíos limpios, y hamburguesa únicamente en los sellos ganados
+                slot.className = `stamp-slot ${estaLleno ? 'filled' : ''}`;
+                slot.innerHTML = estaLleno ? '🍔' : '';
                 grid.appendChild(slot);
             }
         }
 
         function generarQRCliente() {
             const contenedorQR = document.getElementById('contenedor-qr');
-            // Usamos una API pública para generar el código QR basado en el número de celular
             const urlQR = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(telefonoCliente)}`;
             contenedorQR.innerHTML = `<img src="${urlQR}" alt="Código QR VIP">`;
         }
@@ -299,7 +314,6 @@
                 if (data && data.mensaje && data.timestamp) {
                     const ultimoTimestampVisto = localStorage.getItem('ultimo_promo_visto') || 0;
                     
-                    // Si hay un timestamp nuevo comparado con lo último que vio el cel, disparamos el banner
                     if (data.timestamp > Number(ultimoTimestampVisto)) {
                         mostrarBannerFlotante(data.mensaje);
                         localStorage.setItem('ultimo_promo_visto', data.timestamp);

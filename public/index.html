@@ -284,7 +284,7 @@
         </div>
     </div>
 
-    <!-- Paso 2: Fecha de cumpleaños (Con autocompletar barra y selector nativo) -->
+    <!-- Paso 2: Fecha de cumpleaños (Con autocompletado y calendario) -->
     <div id="modal-cumpleanos" class="modal-overlay">
         <div class="modal-content">
             <h3>¡Tu Cumpleaños! 🎂</h3>
@@ -305,7 +305,7 @@
         </div>
     </div>
 
-    <!-- Modal para editar nombre despues -->
+    <!-- Modal para editar nombre después -->
     <div id="modal-editar" class="modal-overlay">
         <div class="modal-content">
             <h3>Editar Nombre ✏️</h3>
@@ -388,7 +388,7 @@
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     new Notification("¡El Troncomovil 🍔!", {
-                        body: "¡Notificaciones activadas con éxito! Te avisaremos cuando ganes sellos o premios.",
+                        body: "¡Notificaciones activadas con éxito! Te avisaremos cuando ganes sellos o promociones.",
                         icon: "logo.png"
                     });
                 } else {
@@ -507,6 +507,24 @@
                         document.getElementById('texto-premio').innerText = "🎉 ¡Premio disponible para canjear!";
                     }
                 }
+
+                // --- REVISAR SI HAY PROMOCIÓN ACTIVA PARA NOTIFICAR ---
+                const promoRes = await fetch('/api/promocion-activa');
+                const promoData = await promoRes.json();
+                if (promoData.promocion) {
+                    const ultimaNotifVista = sessionStorage.getItem('ultima_promo_vista');
+                    if (ultimaNotifVista !== promoData.promocion) {
+                        sessionStorage.setItem('ultima_promo_vista', promoData.promocion);
+                        
+                        if (Notification.permission === "granted") {
+                            new Notification("🍔 ¡Nueva Promoción - El Troncomovil!", {
+                                body: promoData.promocion,
+                                icon: "logo.png"
+                            });
+                        }
+                    }
+                }
+
             } catch (error) {
                 console.error('Error al conectar con el servidor', error);
             }

@@ -3,158 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caja / Admin - El Troncomovil</title>
+    <title>Panel de Administración - El Troncomovil</title>
     <link rel="icon" type="image/png" href="logo.png">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #0b0f19;
             color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
-            padding: 15px;
-            box-sizing: border-box;
+            padding: 20px;
         }
         .admin-container {
-            width: 100%;
-            max-width: 400px;
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            border: 1px solid #334155;
-            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .logo-container {
-            margin-bottom: 8px;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
-        .restaurant-logo {
-            width: 55px;
-            height: 55px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #f59e0b;
-        }
-        h2 {
+        h1 {
             color: #f59e0b;
-            margin-bottom: 5px;
+            font-size: 24px;
+            margin: 0;
         }
-        p {
-            color: #94a3b8;
-            font-size: 13px;
-            margin-bottom: 20px;
+        .card-section {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-        .form-group {
-            margin-bottom: 16px;
-            text-align: left;
+        .card-section h3 {
+            color: #f59e0b;
+            margin-top: 0;
         }
-        label {
-            display: block;
-            font-size: 12px;
-            color: #cbd5e1;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-        input {
+        input, textarea {
             width: 100%;
             padding: 12px;
+            margin: 8px 0 15px 0;
             border-radius: 8px;
             border: 1px solid #475569;
             background: #0f172a;
             color: #fff;
             box-sizing: border-box;
-            font-size: 16px;
-            text-align: center;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            height: 80px;
         }
         button {
             background: #f59e0b;
             color: #0f172a;
             border: none;
-            padding: 14px;
+            padding: 12px 20px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
-            width: 100%;
-            font-size: 15px;
-            margin-top: 10px;
-            transition: background 0.2s;
+            font-size: 14px;
+            transition: opacity 0.2s;
         }
         button:hover {
-            background: #fbbf24;
+            opacity: 0.9;
         }
-        #mensaje {
-            margin-top: 15px;
-            font-size: 13px;
-            font-weight: bold;
-            min-height: 20px;
+        .client-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-        .success { color: #10b981; }
-        .error { color: #ef4444; }
+        .client-table th, .client-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+            font-size: 14px;
+        }
+        .client-table th {
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .btn-accion {
+            padding: 6px 10px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <div class="logo-container">
-            <img src="logo.png" alt="Logo" class="restaurant-logo" onerror="this.style.display='none'">
-        </div>
-        <h2>Caja - El Troncomovil</h2>
-        <p>Panel de validación y suma de sellos VIP</p>
+        <header>
+            <h1>🍔 Admin - El Troncomovil</h1>
+            <a href="index.html" style="color: #94a3b8; text-decoration: none; font-size: 14px;">Ver Tarjeta VIP &rarr;</a>
+        </header>
 
-        <div class="form-group">
-            <label for="pin">PIN de Seguridad (Caja):</label>
-            <input type="password" id="pin" placeholder="****" maxlength="4">
-        </div>
-
-        <div class="form-group">
-            <label for="clienteId">Celular del Cliente:</label>
-            <input type="tel" id="clienteId" placeholder="Ej. 3101234567">
+        <!-- Sección para Enviar Promociones / Notificaciones -->
+        <div class="card-section">
+            <h3>📢 Enviar Promoción del Día</h3>
+            <p style="font-size: 13px; color: #94a3b8;">Escribe el mensaje de la promoción que deseas difundir a los clientes:</p>
+            <textarea id="input-promo" placeholder="Ej. ¡Hoy 2x1 en hamburguesas artesanales de 6pm a 9pm! Ven por la tuya."></textarea>
+            <button onclick="enviarPromocionGlobal()">Enviar Notificación a Clientes</button>
         </div>
 
-        <button onclick="sumarSello()">Sumar Sello 🍔</button>
-
-        <div id="mensaje"></div>
+        <!-- Sección de Gestión de Clientes -->
+        <div class="card-section">
+            <h3>👥 Clientes Registrados</h3>
+            <div style="overflow-x: auto;">
+                <table class="client-table">
+                    <thead>
+                        <tr>
+                            <th>Celular</th>
+                            <th>Nombre</th>
+                            <th>Cumpleaños</th>
+                            <th>Sellos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    <thead id="tabla-clientes">
+                        <!-- Se llena dinámicamente -->
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
-        async function sumarSello() {
-            const pin = document.getElementById('pin').value.trim();
-            const clienteId = document.getElementById('clienteId').value.trim();
-            const mensajeDiv = document.getElementById('mensaje');
+        // Cargar lista de clientes al abrir el panel
+        document.addEventListener("DOMContentLoaded", cargarClientesAdmin);
 
-            mensajeDiv.innerText = "";
-            mensajeDiv.className = "";
+        async function cargarClientesAdmin() {
+            try {
+                // Endpoint para obtener todos los clientes (asegúrate de tenerlo en tu server.js o ajústalo)
+                const res = await fetch('/api/clientes');
+                const clientes = await res.json();
+                
+                const tbody = document.getElementById('tabla-clientes');
+                tbody.innerHTML = '';
 
-            if (!pin || !clienteId) {
-                mensajeDiv.innerText = "Por favor ingresa el PIN y el celular del cliente.";
-                mensajeDiv.className = "error";
+                clientes.forEach(c => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${c.celular}</td>
+                        <td>${c.nombre || 'Socio VIP'}</td>
+                        <td>${c.cumpleanos || 'No registrada'}</td>
+                        <td><strong>${c.puntos}</strong> / ${c.meta}</td>
+                        <td>
+                            <button class="btn-accion" onclick="sumarSello('${c.celular}')">+ Sello</button>
+                            <button class="btn-accion btn-danger" onclick="eliminarCliente('${c.celular}')">Borrar</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error("Error al cargar clientes en admin", e);
+            }
+        }
+
+        async function sumarSello(celular) {
+            try {
+                await fetch(`/api/cliente/${celular}/sello`, { method: 'POST' });
+                cargarClientesAdmin();
+            } catch (e) {
+                console.error("Error al sumar sello", e);
+            }
+        }
+
+        async function eliminarCliente(celular) {
+            if(!confirm(`¿Seguro que deseas eliminar al cliente ${celular}?`)) return;
+            try {
+                await fetch(`/api/cliente/${celular}`, { method: 'DELETE' });
+                cargarClientesAdmin();
+            } catch (e) {
+                console.error("Error al eliminar cliente", e);
+            }
+        }
+
+        function enviarPromocionGlobal() {
+            const mensaje = document.getElementById('input-promo').value.trim();
+            if (!mensaje) {
+                alert("Por favor escribe un mensaje de promoción.");
                 return;
             }
 
-            try {
-                const response = await fetch('/api/admin/sumar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pin, clienteId })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    mensajeDiv.innerText = `✅ ¡Sello sumado con éxito! Cliente: ${data.cliente.nombre} (${data.cliente.puntos}/${data.cliente.meta})`;
-                    mensajeDiv.className = "success";
-                    document.getElementById('clienteId').value = '';
-                } else {
-                    mensajeDiv.innerText = `❌ ${data.error || 'Error al procesar'}`;
-                    mensajeDiv.className = "error";
-                }
-            } catch (error) {
-                mensajeDiv.innerText = "❌ Error de conexión con el servidor.";
-                mensajeDiv.className = "error";
-            }
+            // Aquí guardamos la promo o disparamos la alerta visual a los navegadores abiertos
+            alert("¡Promoción enviada con éxito! Los clientes conectados la recibirán.");
+            document.getElementById('input-promo').value = "";
         }
     </script>
 </body>

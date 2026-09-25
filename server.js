@@ -22,10 +22,10 @@ const clienteSchema = new mongoose.Schema({
 
 const Cliente = mongoose.model('Cliente', clienteSchema);
 
-// --- VARIABLES GLOBALES PARA PROMOCIONES ---
+// Variable global para promociones
 let ultimaPromocion = "";
 
-// Ruta para listar todos los clientes en el panel de administración
+// 1. Obtener todos los clientes para el panel de administración
 app.get('/api/clientes', async (req, res) => {
     try {
         const clientes = await Cliente.find();
@@ -35,6 +35,7 @@ app.get('/api/clientes', async (req, res) => {
     }
 });
 
+// 2. Buscar o crear cliente por teléfono
 app.get('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -57,6 +58,7 @@ app.get('/api/cliente/:id', async (req, res) => {
     }
 });
 
+// 3. Registrar o actualizar datos básicos del cliente
 app.post('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -83,6 +85,7 @@ app.post('/api/cliente/:id', async (req, res) => {
     }
 });
 
+// 4. Actualizar solo el nombre
 app.post('/api/cliente/:id/nombre', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -101,6 +104,7 @@ app.post('/api/cliente/:id/nombre', async (req, res) => {
     }
 });
 
+// 5. Guardar cumpleaños
 app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -120,7 +124,7 @@ app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     }
 });
 
-// Ruta para sumar un sello de forma directa (útil para el admin)
+// 6. Sumar sello desde el panel de administrador
 app.post('/api/cliente/:id/sello', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -141,7 +145,7 @@ app.post('/api/cliente/:id/sello', async (req, res) => {
     }
 });
 
-// Ruta para eliminar un cliente desde el panel de admin
+// 7. Eliminar cliente desde el panel de administración
 app.delete('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -152,39 +156,7 @@ app.delete('/api/cliente/:id', async (req, res) => {
     }
 });
 
-app.post('/api/admin/sumar', async (req, res) => {
-    try {
-        const { pin } = req.body;
-        let clienteId = req.body.clienteId ? req.body.clienteId.trim() : '';
-
-        if (pin !== "1234") {
-            return res.status(401).json({ error: "PIN incorrecto" });
-        }
-
-        if (!clienteId) {
-            return res.status(400).json({ error: "El número de celular es obligatorio" });
-        }
-
-        let cliente = await Cliente.findOne({ telefono: clienteId });
-        if (!cliente) {
-            return res.status(404).json({ error: "Este número de celular não está registrado" });
-        }
-
-        if (cliente.puntos < cliente.meta) {
-            cliente.puntos += 1;
-            await cliente.save();
-            res.json({ success: true, cliente });
-        } else {
-            res.status(400).json({ error: "¡El cliente ya completó todos los sellos!" });
-        }
-    } catch (error) {
-        res.status(500).json({ error: "Error en el servidor al sumar sello" });
-    }
-});
-
-// --- ENDPOINTS NUEVOS PARA PROMOCIONES ---
-
-// El admin guarda la promoción del día
+// 8. Endpoints de promociones globales
 app.post('/api/admin/promocion', (req, res) => {
     const { mensaje } = req.body;
     if (!mensaje) return res.status(400).json({ error: "Mensaje vacío" });
@@ -193,7 +165,6 @@ app.post('/api/admin/promocion', (req, res) => {
     res.json({ success: true, mensaje: "Promoción guardada con éxito" });
 });
 
-// Los clientes consultan si hay promoción activa
 app.get('/api/promocion-activa', (req, res) => {
     res.json({ promocion: ultimaPromocion });
 });

@@ -22,6 +22,19 @@ const clienteSchema = new mongoose.Schema({
 
 const Cliente = mongoose.model('Cliente', clienteSchema);
 
+// --- VARIABLES GLOBALES PARA PROMOCIONES ---
+let ultimaPromocion = "";
+
+// Ruta para listar todos los clientes en el panel de administración
+app.get('/api/clientes', async (req, res) => {
+    try {
+        const clientes = await Cliente.find();
+        res.json(clientes);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener la lista de clientes" });
+    }
+});
+
 app.get('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -107,6 +120,38 @@ app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     }
 });
 
+// Ruta para sumar un sello de forma directa (útil para el admin)
+app.post('/api/cliente/:id/sello', async (req, res) => {
+    try {
+        let clienteId = req.params.id.trim();
+        let cliente = await Cliente.findOne({ telefono: clienteId });
+        if (!cliente) {
+            return res.status(404).json({ error: "Cliente no encontrado" });
+        }
+
+        if (cliente.puntos < cliente.meta) {
+            cliente.puntos += 1;
+            await cliente.save();
+            res.json({ success: true, cliente });
+        } else {
+            res.status(400).json({ error: "El cliente ya completó su meta" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Error al sumar sello" });
+    }
+});
+
+// Ruta para eliminar un cliente desde el panel de admin
+app.delete('/api/cliente/:id', async (req, res) => {
+    try {
+        let clienteId = req.params.id.trim();
+        await Cliente.findOneAndDelete({ telefono: clienteId });
+        res.json({ success: true, message: "Cliente eliminado" });
+    } catch (error) {
+        res.status(500).json({ error: "Error al eliminar cliente" });
+    }
+});
+
 app.post('/api/admin/sumar', async (req, res) => {
     try {
         const { pin } = req.body;
@@ -122,7 +167,7 @@ app.post('/api/admin/sumar', async (req, res) => {
 
         let cliente = await Cliente.findOne({ telefono: clienteId });
         if (!cliente) {
-            return res.status(404).json({ error: "Este número de celular no está registrado" });
+            return res.status(404).json({ error: "Este número de celular não está registrado" });
         }
 
         if (cliente.puntos < cliente.meta) {
@@ -135,6 +180,22 @@ app.post('/api/admin/sumar', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: "Error en el servidor al sumar sello" });
     }
+});
+
+// --- ENDPOINTS NUEVOS PARA PROMOCIONES ---
+
+// El admin guarda la promoción del día
+app.post('/api/admin/promocion', (req, res) => {
+    const { mensaje } = req.body;
+    if (!mensaje) return res.status(400).json({ error: "Mensaje vacío" });
+    
+    ultimaPromocion = mensaje;
+    res.json({ success: true, mensaje: "Promoción guardada con éxito" });
+});
+
+// Los clientes consultan si hay promoción activa
+app.get('/api/promocion-activa', (req, res) => {
+    res.json({ promocion: ultimaPromocion });
 });
 
 const PORT = process.env.PORT || 3000;

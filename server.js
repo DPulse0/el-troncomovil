@@ -6,25 +6,22 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Conexión a MongoDB Atlas (usa variable de entorno o tu URL directa)
 const MONGO_URI = process.env.MONGO_URI || "TU_URL_DE_MONGODB_ATLAS_AQUI";
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log("🔥 Conectado exitosamente a MongoDB Atlas"))
     .catch(err => console.error("❌ Error al conectar a MongoDB:", err));
 
-// Definir el Esquema y Modelo del Cliente (Actualizado con cumpleanos)
 const clienteSchema = new mongoose.Schema({
     telefono: { type: String, required: true, unique: true },
     nombre: { type: String, default: "Socio VIP" },
     puntos: { type: Number, default: 0 },
     meta: { type: Number, default: 10 },
-    cumpleanos: { type: String, default: "" } // Nuevo campo para la fecha (Ej: "21/01")
+    cumpleanos: { type: String, default: "" }
 });
 
 const Cliente = mongoose.model('Cliente', clienteSchema);
 
-// Obtener o crear datos del cliente por su celular
 app.get('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -47,7 +44,6 @@ app.get('/api/cliente/:id', async (req, res) => {
     }
 });
 
-// Registrar o crear cliente con su número
 app.post('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -74,7 +70,6 @@ app.post('/api/cliente/:id', async (req, res) => {
     }
 });
 
-// Actualizar solo el nombre del cliente
 app.post('/api/cliente/:id/nombre', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -93,7 +88,6 @@ app.post('/api/cliente/:id/nombre', async (req, res) => {
     }
 });
 
-// Actualizar o registrar el cumpleaños del cliente
 app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -113,7 +107,6 @@ app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     }
 });
 
-// Panel de Administración: Sumar sello validando que el cliente exista
 app.post('/api/admin/sumar', async (req, res) => {
     try {
         const { pin } = req.body;

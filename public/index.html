@@ -284,7 +284,7 @@
         </div>
     </div>
 
-    <!-- Paso 2: Fecha de cumpleaños (Con autocompletado y calendario) -->
+    <!-- Paso 2: Fecha de cumpleaños -->
     <div id="modal-cumpleanos" class="modal-overlay">
         <div class="modal-content">
             <h3>¡Tu Cumpleaños! 🎂</h3>
@@ -305,7 +305,7 @@
         </div>
     </div>
 
-    <!-- Modal para editar nombre después -->
+    <!-- Modal para editar nombre -->
     <div id="modal-editar" class="modal-overlay">
         <div class="modal-content">
             <h3>Editar Nombre ✏️</h3>
@@ -313,6 +313,15 @@
             <input type="text" id="input-editar-nombre" placeholder="Nuevo nombre">
             <button onclick="actualizarNombre()">Guardar Cambios</button>
             <button class="btn-cancelar" onclick="cerrarModalEditar()">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal / Banner flotante para la Promoción del Día (Visible para todos) -->
+    <div id="modal-promocion" class="modal-overlay">
+        <div class="modal-content" style="border: 2px solid #f59e0b;">
+            <h3 style="color: #f59e0b;">🎉 ¡Promoción del Día!</h3>
+            <p id="texto-promocion-banner" style="font-size: 14px; color: #f8fafc; margin: 15px 0; line-height: 1.5;"></p>
+            <button onclick="cerrarModalPromocion()">¡Genial, gracias!</button>
         </div>
     </div>
 
@@ -358,7 +367,6 @@
             iniciarTarjeta(clienteCelular);
         }
 
-        // Función para autocompletar la barra '/' en formato DD/MM
         function formatoFecha(input) {
             let val = input.value.replace(/\D/g, '');
             if (val.length > 2) {
@@ -367,18 +375,16 @@
             input.value = val;
         }
 
-        // Sincronizar el selector de calendario nativo con el input de texto DD/MM
         function sincronizarCalendario(inputCal) {
-            const fechaVal = inputCal.value; // Formato YYYY-MM-DD
+            const fechaVal = inputCal.value;
             if (fechaVal) {
-                const partes = fechaVal.split('-'); // [YYYY, MM, DD]
+                const partes = fechaVal.split('-');
                 if (partes.length === 3) {
                     document.getElementById('input-cumpleanos').value = `${partes[2]}/${partes[1]}`;
                 }
             }
         }
 
-        // Solicitar permisos de Notificaciones Push del navegador
         function pedirPermisoNotificaciones() {
             if (!("Notification" in window)) {
                 alert("Este navegador no soporta notificaciones desktop.");
@@ -388,11 +394,11 @@
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") {
                     new Notification("¡El Troncomovil 🍔!", {
-                        body: "¡Notificaciones activadas con éxito! Te avisaremos cuando ganes sellos o promociones.",
+                        body: "¡Notificaciones activadas con éxito! Te avisaremos ofertas y sellos.",
                         icon: "logo.png"
                     });
                 } else {
-                    alert("Has denegado o cerrado los permisos de notificación.");
+                    alert("Has denegado o cerrado los permisos de notificación en tu navegador.");
                 }
             });
         }
@@ -448,6 +454,10 @@
 
         function cerrarModalEditar() {
             document.getElementById('modal-editar').style.display = 'none';
+        }
+
+        function cerrarModalPromocion() {
+            document.getElementById('modal-promocion').style.display = 'none';
         }
 
         async function actualizarNombre() {
@@ -508,20 +518,26 @@
                     }
                 }
 
-                // --- REVISAR SI HAY PROMOCIÓN ACTIVA PARA NOTIFICAR ---
+                // --- GESTIÓN DE PROMOCIONES (Notificación Push + Modal Visible) ---
                 const promoRes = await fetch('/api/promocion-activa');
                 const promoData = await promoRes.json();
+                
                 if (promoData.promocion) {
                     const ultimaNotifVista = sessionStorage.getItem('ultima_promo_vista');
                     if (ultimaNotifVista !== promoData.promocion) {
                         sessionStorage.setItem('ultima_promo_vista', promoData.promocion);
                         
+                        // 1. Si tiene las notificaciones del navegador activadas, lanzamos el Push nativo
                         if (Notification.permission === "granted") {
                             new Notification("🍔 ¡Nueva Promoción - El Troncomovil!", {
                                 body: promoData.promocion,
                                 icon: "logo.png"
                             });
                         }
+
+                        // 2. Además, mostramos el modal flotante en pantalla para asegurar que lo vea sí o sí
+                        document.getElementById('texto-promocion-banner').innerText = promoData.promocion;
+                        document.getElementById('modal-promocion').style.display = 'flex';
                     }
                 }
 

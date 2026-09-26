@@ -104,7 +104,7 @@ app.post('/api/cliente/:id/nombre', async (req, res) => {
     }
 });
 
-// 5. Guardar cumpleaños
+// 5. Guardar o actualizar cumpleaños
 app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -124,7 +124,7 @@ app.post('/api/cliente/:id/cumpleanos', async (req, res) => {
     }
 });
 
-// 6. Sumar sello desde el panel de administrador
+// 6. Sumar sello desde el panel de administración
 app.post('/api/cliente/:id/sello', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -145,7 +145,28 @@ app.post('/api/cliente/:id/sello', async (req, res) => {
     }
 });
 
-// 7. Eliminar cliente desde el panel de administración
+// 7. Quitar/Restar sello desde el panel de administración
+app.put('/api/cliente/:id/quitar-sello', async (req, res) => {
+    try {
+        let clienteId = req.params.id.trim();
+        let cliente = await Cliente.findOne({ telefono: clienteId });
+        if (!cliente) {
+            return res.status(404).json({ error: "Cliente no encontrado" });
+        }
+
+        if (cliente.puntos > 0) {
+            cliente.puntos -= 1;
+            await cliente.save();
+            res.json({ success: true, cliente });
+        } else {
+            res.status(400).json({ error: "El cliente ya tiene 0 sellos" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Error al quitar sello" });
+    }
+});
+
+// 8. Eliminar cliente desde el panel de administración
 app.delete('/api/cliente/:id', async (req, res) => {
     try {
         let clienteId = req.params.id.trim();
@@ -156,7 +177,7 @@ app.delete('/api/cliente/:id', async (req, res) => {
     }
 });
 
-// 8. Endpoints de promociones globales con sincronización por Timestamp
+// 9. Endpoints de promociones globales con sincronización por Timestamp
 app.post('/api/admin/promocion', (req, res) => {
     const { mensaje } = req.body;
     if (!mensaje) return res.status(400).json({ error: "Mensaje vacío" });

@@ -140,6 +140,10 @@
             opacity: 0.85;
         }
 
+        .btn-restar {
+            background-color: #d97706; /* Tono secundario para diferenciar el restar */
+        }
+
         .btn-danger {
             background-color: #ef4444;
             color: #ffffff;
@@ -201,13 +205,16 @@
 
                 clientes.forEach(c => {
                     const tr = document.createElement('tr');
+                    // Usamos c._id si tu backend lo usa, o mantenemos el teléfono como identificador principal
+                    const identificador = c._id || c.telefono;
                     tr.innerHTML = `
                         <td>${c.telefono}</td>
                         <td>${c.nombre || 'Socio VIP'}</td>
                         <td>${c.cumpleanos || 'No registrada'}</td>
-                        <td><strong>${c.puntos}</strong> / ${c.meta}</td>
+                        <td><strong>${c.puntos !== undefined ? c.puntos : (c.sellos || 0)}</strong></td>
                         <td>
-                            <button class="btn-accion" onclick="sumarSello('${c.telefono}')">+ Sello</button>
+                            <button class="btn-accion" onclick="modificarSello('${c.telefono}', 'sumar')">+ Sello</button>
+                            <button class="btn-accion btn-restar" onclick="modificarSello('${c.telefono}', 'quitar')">- Sello</button>
                             <button class="btn-accion btn-danger" onclick="eliminarCliente('${c.telefono}')">Borrar</button>
                         </td>
                     `;
@@ -218,17 +225,23 @@
             }
         }
 
-        async function sumarSello(telefono) {
+        async function modificarSello(telefono, tipo) {
+            // tipo puede ser 'sumar' o 'quitar'
+            const endpoint = tipo === 'sumar' ? `/api/cliente/${telefono}/sello` : `/api/cliente/${telefono}/quitar-sello`;
+            const metodo = tipo === 'sumar' ? 'POST' : 'PUT'; // Ajusta según tu backend, aquí lo dejamos flexible
+
             try {
-                const res = await fetch(`/api/cliente/${telefono}/sello`, { method: 'POST' });
+                const res = await fetch(endpoint, { method: metodo });
                 const data = await res.json();
-                if (data.success) {
+                
+                // Verificamos si responde con success o de forma directa
+                if (data.success || res.ok) {
                     cargarClientesAdmin();
                 } else {
-                    alert(data.error || "No se pudo sumar el sello");
+                    alert(data.error || data.mensaje || "No se pudo actualizar el sello");
                 }
             } catch (e) {
-                console.error("Error al sumar sello", e);
+                console.error("Error al modificar sello", e);
             }
         }
 
@@ -237,7 +250,7 @@
             try {
                 const res = await fetch(`/api/cliente/${telefono}`, { method: 'DELETE' });
                 const data = await res.json();
-                if (data.success) {
+                if (data.success || res.ok) {
                     cargarClientesAdmin();
                 } else {
                     alert(data.error || "No se pudo eliminar el cliente");
